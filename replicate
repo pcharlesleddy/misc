@@ -1,0 +1,51 @@
+#!/bin/bash -e
+
+CLIENT_IP=10.0.2.10
+#ssh $CLIENT_IP 'rm -rfv /data/2012*' 
+
+echo ------
+echo Turn off mysql on client
+read a
+ssh $CLIENT_IP /etc/init.d/mysql stop
+
+echo ------
+echo Backup innodb tables
+read a
+innobackupex /data/
+
+echo ------
+backup=$(find /data/ -maxdepth 1 -type d -mmin -3 | tail -1)
+echo Apply logs to backup $backup
+read a
+innobackupex --apply-log $backup
+
+echo ------
+echo rsync backup to client $backup
+read a
+rsync -avzP $backup/ $CLIENT_IP:$backup/
+
+echo ------
+todaysdate=`date +\%Y-\%m-\%d`
+backupdir=/data/backups/mysql/$todaysdate
+echo On client, backup /var/lib/mysql to $backupdir 
+read a
+ssh $CLIENT_IP mkdir -p $backupdir 
+ssh $CLIENT_IP rsync -avP /var/lib/mysql $backupdir
+
+echo ------
+echo On client, delete existing /var/lib/mysql contents and copy in new
+read a
+ssh $CLIENT_IP 'rm -rfv /var/lib/mysql/*'
+ssh $CLIENT_IP rsync -avP $backup/ /var/lib/mysql/
+ssh $CLIENT_IP chown -Rv mysql.mysql /var/lib/mysql
+
+echo ------
+echo TODO: pull master log number and entry point out of /var/lib/mysql/xtrabackup_binlog_info and set slave on client
+
+echo ------
+echo Make sure debian mysql admin password matches on client and that the my.cnf file is correct on the client
+echo Then, start the slave on the client and verify all is well
+read a
+
+echo ------
+echo END
