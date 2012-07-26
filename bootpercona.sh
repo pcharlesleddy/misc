@@ -7,7 +7,6 @@ apt-get -y install mdadm
 apt-get -y purge apparmor*
 
 
-
 umount /mnt
 yes | mdadm --create /dev/md0 --level=0 --raid-devices=2 /dev/xvdb /dev/xvdc
 mdadm --detail --scan >> /etc/mdadm/mdadm.conf
