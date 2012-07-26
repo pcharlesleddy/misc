@@ -2,13 +2,13 @@
 
 SUBNAME="20120321"
 ZONE="us-east-1e"
-SECURITY_GROUP="aupeo-site"
+SECURITY_GROUP="blarg-site"
 REGION="us-east-1"
 INSTANCE_SIZE="c1.medium"
-LB_NAME="aupeo-lb-as-"$SUBNAME
-LC_NAME="aupeo-lc-as-"$SUBNAME
+LB_NAME="blarg-lb-as-"$SUBNAME
+LC_NAME="blarg-lc-as-"$SUBNAME
 LC_IMAGE_ID="ami-49975c20"
-SG_NAME="aupeo-as-gr-"$SUBNAME
+SG_NAME="blarg-as-gr-"$SUBNAME
 MON_HIGH_NAME="asHighCPUAlarm_"$SUBNAME
 MON_LOW_NAME="asLowCPUAlarm_"$SUBNAME
 
