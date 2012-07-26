@@ -14,7 +14,6 @@ mdadm --detail --scan >> /etc/mdadm/mdadm.conf
 mdadm --detail /dev/md0
 
 
-
 apt-get -y install lvm2
 pvcreate /dev/md0
 vgcreate vg /dev/md0
@@ -25,13 +24,11 @@ lvcreate -L50G -n mysqlrelaylogs vg
 lvcreate -L0.5T -n data vg
 
 
-
 mkfs -t ext4 /dev/vg/mysqldata
 mkfs -t ext4 /dev/vg/mysqllogs
 mkfs -t ext4 /dev/vg/mysqlbinlogs
 mkfs -t ext4 /dev/vg/mysqlrelaylogs
 mkfs -t ext4 /dev/vg/data
-
 
 
 mkdir -pv /mnt/mysql/relaylogs /mnt/mysql/binlogs /data /var/lib/mysql /var/log/mysql
@@ -61,7 +58,7 @@ apt-get -y upgrade
 apt-get -yq install percona-server-server-5.5 percona-server-client-5.5 xtrabackup
 
 
-chown -Rv mysql.mysql /mnt/mysql/relaylogs /mnt/mysql/binlogs
+chown -Rv mysql.mysql /mnt/mysql
 
 DOMAIN=blarg.com
 
