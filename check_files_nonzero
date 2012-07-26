@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'nagios-probe'
+require 'pp'
+
+class ContentProbe < Nagios::Probe
+
+  def check_crit
+    if ( file = Dir.glob(@opts['dirglob']).detect { |f| File.zero?(f) } )
+      @file_zero_size = file
+      true
+    else
+      false
+    end
+  end
+
+  def check_warn
+    false
+  end
+
+  def crit_message
+    "Zero-sized: #{@file_zero_size}"
+  end
+
+  def ok_message
+    "No zero-sized files"
+  end
+end
+
+begin
+  options = {'dirglob' => '/mnt/content/*/*aac'}
+  probe = ContentProbe.new(options)
+  probe.run
+rescue Exception => e
+  puts "Unknown: " + e
+  exit Nagios::UNKNOWN
+end
+
+puts probe.message
+exit probe.retval
