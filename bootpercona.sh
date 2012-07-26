@@ -1,5 +1,28 @@
 #!/bin/bash
 
+apt-get -y install htop lsof iftop tcpdump
+apt-get -y install mdadm
+apt-get -y purge apparmor*
+
+umount /mnt
+mdadm --create /dev/md0 --level=0 --raid-devices=2 /dev/xvdb /dev/xvdc
+mdadm --detail --scan >> /etc/mdadm/mdadm.conf
+mdadm --detail /dev/md0
+
+apt-get install lvm2
+pvcreate /dev/md0
+vgcreate vg /dev/md0
+lvcreate -L200G -n mysqldata vg
+lvcreate -L10G -n mysqllogs vg
+lvcreate -L50G -n mysqlbinlogs vg
+lvcreate -L50G -n mysqlrelaylogs vg
+lvcreate -L0.5T -n data vg
+mkfs -t ext4 /dev/vg/mysqldata
+mkfs -t ext4 /dev/vg/mysqllogs
+mkfs -t ext4 /dev/vg/mysqlbinlogs
+mkfs -t ext4 /dev/vg/mysqlrelaylogs
+mkfs -t ext4 /dev/vg/data
+
 cat<<EOF > /etc/apt/sources.list.d/percona.list
 # Percona
 deb http://repo.percona.com/apt oneiric main
