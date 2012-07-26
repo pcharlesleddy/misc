@@ -61,32 +61,7 @@ apt-get -y upgrade
 apt-get -yq install percona-server-server-5.5 percona-server-client-5.5 xtrabackup
 
 
-service mysql stop
-
 chown -Rv mysql.mysql /mnt/mysql/relaylogs /mnt/mysql/binlogs
-mkdir -p /etc/mysql
-cat<<EOF > /etc/mysql/my.cnf
-[mysqld]
-datadir=/var/lib/mysql/
-
-server-id=200
-#log-bin=mysql-bin
-log-bin=/mnt/mysql/binlogs/mysql-bin
-relay-log=/mnt/mysql/relaylogs/mysql-relay-bin
-log-slave-updates
-auto-increment-increment=2
-auto-increment-offset=2
-
-log-error=/var/log/mysql/error.log
-#log-slow-queries=/var/log/mysql/slow.log
-slow-query-log=1
-
-innodb_buffer_pool_size = 6500M
-innodb_flush_method=O_DIRECT
-EOF
-
-service mysql start
-
 
 DOMAIN=blarg.com
 
