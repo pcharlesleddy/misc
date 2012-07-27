@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 
-DOMAIN=blarg.com
-HOSTNAME=myName
+DOMAIN=mydomain.com
+HOSTNAME=myhost01
 FQDN=$HOSTNAME.$DOMAIN
 hostname $FQDN
 echo $FQDN > /etc/hostname
@@ -64,3 +64,4 @@ apt-get -y upgrade
 apt-get -yq install percona-server-server-5.5 percona-server-client-5.5 xtrabackup
 chown -Rv mysql.mysql /mnt/mysql
 
+reboot
