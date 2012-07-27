@@ -58,7 +58,7 @@ read a
 rsync -avzP $backup/ $CLIENT_IP:$backup/
 
 echo ------
-todaysdate=`date +\%Y-\%m-\%d`
+todaysdate=`date +\%Y-\%m-\%d-\%M`
 backupdir=/data/backups/mysql/$todaysdate
 echo On client, backup /var/lib/mysql to $backupdir
 read a
