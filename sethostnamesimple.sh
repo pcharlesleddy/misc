@@ -1,16 +1,10 @@
 #!/bin/bash
 
-DOMAIN=blarg.com
+DOMAIN=pctal.net
 
 LOCIP=`/usr/bin/curl -s http://169.254.169.254/latest/meta-data/local-ipv4`
-echo $LOCIP
-IPV4=`/usr/bin/curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
-echo $IPV4
-INSTANCE_ID=`/usr/bin/curl -s http://169.254.169.254/latest/meta-data/instance-id | cut -d- -f2`
-echo $INSTANCE_ID
-REGION=`/usr/bin/curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | cut -d- -f1-2`
-echo $REGION
-HOSTNAME=webapp-$REGION-$INSTANCE_ID
+
+HOSTNAME=puppetmaster001
 FQDN=$HOSTNAME.$DOMAIN
 echo $HOSTNAME
 
