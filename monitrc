@@ -1,0 +1,19 @@
+set daemon  30
+with start delay 60
+
+set mailserver localhost
+set alert system@j.com
+
+set mailserver localhost
+set mail-format {
+        from: system@j.com
+        subject: e01
+}
+
+set logfile syslog
+
+set idfile /var/.monit.id
+set statefile /var/.monit.state
+
+# Include specialised configs
+include /etc/monit/conf.d/*
