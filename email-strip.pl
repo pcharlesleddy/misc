@@ -3,56 +3,47 @@
 use Email::Simple;
 use Data::Dumper;
 use File::Util;
+use Digest::MD5 qw(md5_hex);
 
-my $email_dir = '/home/paul/aa/tmpE';
+my $email_dir = '/home/paul/aa/tmpF';
 
 my $f = File::Util->new();
 my @files = $f->list_dir($email_dir,'--files-only');
+my $data = {};
+@files = @files[ 0 .. 200 ];
 
 foreach my $file (@files) {
-    my $matched = 0;
 
     next if ($file !~ /\.eml$/);
     my $f = File::Util->new();
     my $contents = $f->load_file($file);
+    my $digest = md5_hex($contents);
 
     my $email = Email::Simple->new($contents);
-    my $email_from = $email->header("From");
-    my $email_to = $email->header("To");
-    my $email_cc = $email->header("CC");
+    $data->{$digest}->{'from'} = $email->header("From");
+    $data->{$digest}->{'to'} = $email->header("To");
+    $data->{$digest}->{'cc'} = $email->header("CC");
+    $data->{$digest}->{'x'} = $email->header("X-Uniform-Type-Identifier");
 
-    my (@to, @cc);
-    my $from = $email_from;
-    @to = split( /,\s*/, $email_to) if defined($email_to);
-    @cc = split( /,\s*/, $email_cc) if defined($email_cc);
-    my $x = $email->header("X-Uniform-Type-Identifier");
+    $data->{$digest}->{'to'} =  defined($data->{$digest}->{'to'}) ? [split( /,\s*/, $data->{$digest}->{'to'})] : [];
+    $data->{$digest}->{'cc'} =  defined($data->{$digest}->{'cc'}) ? [split( /,\s*/, $data->{$digest}->{'cc'})] : [];
 
-    my $pattern = '\@glossybox\.ca';
+    $pattern = '\@glossybox\.ca';
+    $data->{$digest}->{'match'}->{'from'} = ($data->{$digest}->{'from'} =~ /$pattern/) ? 1 : 0;
+    $data->{$digest}->{'match'}->{'to'} = scalar(grep( /$pattern/, @{$data->{$digest}->{'to'}}));
+    $data->{$digest}->{'match'}->{'cc'} = scalar(grep( /$pattern/, @{$data->{$digest}->{'cc'}}));
+    $data->{$digest}->{'match'}->{'x'} = defined($data->{$digest}->{'x'}) ? 1 : 0;
 
-    my $from_match = ($from =~ /$pattern/) ? 1 : 0;
-    my $to_match = scalar(grep( /$pattern/, @to));
-    my $cc_match = scalar(grep( /$pattern/, @cc));
-    my $x_match = defined($x) ? 1 : 0;
-
-    if (
-        $x_match
-        or ( $from_match and ( $to_match or $cc_match ) )
-        or ( $to_match and $cc_match )
-        or ( $to_match > 1 )
-        or ( $cc_match > 1 )
+    $data->{$digest}->{'match'}->{'have_internal_copy'} = (
+        $data->{$digest}->{'match'}->{'x'}
+        or ( $data->{$digest}->{'match'}->{'from'} and ( $data->{$digest}->{'match'}->{'to'} or $data->{$digest}->{'match'}->{'cc'} ) )
+        or ( $data->{$digest}->{'match'}->{'to'} and $data->{$digest}->{'match'}->{'cc'} )
+        or ( $data->{$digest}->{'match'}->{'to'} > 1 )
+        or ( $data->{$digest}->{'match'}->{'cc'} > 1 )
     )
-    {
-        print "$file\n";
-        $matched = 1;
-    }
-
-    next;
-
-    print "From -> ${from}\nTo -> @{to}\nCC -> @{cc}\n";
-    print "----\n";
-    print "From Match -> $from_match\n";
-    print "To Match -> $to_match\n";
-    print "CC Match -> $cc_match\n";
-    print "X Match -> $x_match\n";
-    print "====================================================================\n";
+        ? 1
+        : 0
 }
+
+print "\n";
+print Dumper($data);
