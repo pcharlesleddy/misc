@@ -10,14 +10,18 @@ my $email_dir = '/home/paul/aa/tmpF';
 my $f = File::Util->new();
 my @files = $f->list_dir($email_dir,'--files-only');
 my $data = {};
-@files = @files[ 0 .. 200 ];
+@files = @files[ 0 .. 2 ];
 
 foreach my $file (@files) {
 
     next if ($file !~ /\.eml$/);
+
+
     my $f = File::Util->new();
     my $contents = $f->load_file($file);
     my $digest = md5_hex($contents);
+
+    $data->{$digest}->{'filename'} = $file;
 
     my $email = Email::Simple->new($contents);
     $data->{$digest}->{'from'} = $email->header("From");
