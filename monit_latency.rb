@@ -1,11 +1,13 @@
 #!/usr/bin/ruby
 
-latency = %x[ping -q -c 3 vpn.corp.glossybox.net | grep 'rtt' | awk -F= '{print $2}' | awk -F/ '{print $2}' | tr -d ' ']
+host = ARGV[0]
 
-if latency.to_i > 15 
-  $stderr.puts('Latency high: ' + latency.chomp + ' seconds')
+latency = %x[ping -q -c 3 #{host} | grep 'rtt' | awk -F= '{print $2}' | awk -F/ '{print $2}' | tr -d ' ']
+
+if latency.to_i > 30 
+  $stderr.puts('Latency high: ' + latency.chomp + ' seconds' + " (#{host})" )
   exit(1)
 else
-  $stderr.puts('Latency OK: ' + latency.chomp + ' seconds')
+  $stderr.puts('Latency OK: ' + latency.chomp + ' seconds' + " (#{host})")
   exit(0)
 end
