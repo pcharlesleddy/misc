@@ -1,0 +1,26 @@
+#!/usr/bin/perl -w
+
+use Data::Dumper;
+
+my $time = time();
+
+my $stats = {
+    'system.asterisk.calls.active' => q{/usr/sbin/asterisk -rx 'core show calls' | grep active | awk '\{print $1\}'},
+#    'system.logs.changed_last10' => q{find /var/log -mmin -10 | wc -l},
+    'system.asterisk.calls.today.dialed' => q{grep ' Dial(' /var/log/asterisk/full | wc -l},
+};
+
+#print Dumper($stats);
+
+my $carbon_output;
+foreach my $mykey (keys %$stats) {
+    my $bash_cmd = $stats->{$mykey};
+    my $output = `$bash_cmd`;
+    chomp $output;
+    $carbon_output .= "$mykey $output $time" . '\n';
+}
+
+#print Dumper($carbon_output);
+
+my $result = `echo '$carbon_output' | nc -w 1 localhost 2003`;
+#print Dumper($result);
