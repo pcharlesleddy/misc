@@ -1,0 +1,29 @@
+#!/bin/sh
+
+export ORACLE_HOME=/oracle/product/11.2.0/db_1
+export ORACLE_SID=abc123ora
+export PATH=$PATH:$ORACLE_HOME/bin
+
+MYUSER=testconnection
+MYPASS=connection
+MYSID=abc123ora
+
+loginchk=`/oracle/product/11.2.0/db_1/bin/sqlplus $MYUSER/$MYPASS < /dev/null`
+loginchk2=` echo  $loginchk | grep -c Connected`
+if [ ${loginchk2} -eq 1 ] ; then
+  echo "OK - local login connected" >2
+else
+  echo "CRITICAL" >2
+  exit 1
+fi
+
+loginchk=`/oracle/product/11.2.0/db_1/bin/sqlplus $MYUSER/$MYPASS@$MYSID < /dev/null`
+loginchk2=` echo  $loginchk | grep -c Connected`
+if [ ${loginchk2} -eq 1 ] ; then
+  echo "OK - remote login connected" >2
+else
+  echo "CRITICAL" >2
+  exit 1
+fi
+echo OK
+exit 0
