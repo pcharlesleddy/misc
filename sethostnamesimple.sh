@@ -24,3 +24,21 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 ff02::3 ip6-allhosts
 EOF
+
+# below for Redhat-types, remove either before this line or after
+
+#!/bin/bash
+
+DOMAIN=c3-prod.internal
+
+LOCIP=`/usr/bin/curl -s http://169.254.169.254/latest/meta-data/local-ipv4`
+
+HOSTNAME=prod-c3-haproxy-03
+FQDN=$HOSTNAME.$DOMAIN
+
+hostname $FQDN
+
+sed -i '/'$LOCIP'/d' /etc/hosts
+echo $LOCIP  $FQDN $HOSTNAME >> /etc/hosts
+
+sed -i "s/HOSTNAME=.*/HOSTNAME=${FQDN}/" /etc/sysconfig/network
