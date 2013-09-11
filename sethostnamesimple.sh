@@ -43,4 +43,4 @@ echo $LOCIP  $FQDN $HOSTNAME >> /etc/hosts
 
 sed -i "s/HOSTNAME=.*/HOSTNAME=${FQDN}/" /etc/sysconfig/network
 
-service rsyslog restart
+service network restart
