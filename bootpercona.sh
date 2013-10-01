@@ -19,6 +19,7 @@ ff02::3 ip6-allhosts
 EOF
 
 export DEBIAN_FRONTEND='noninteractive'
+apt-get update
 apt-get -y install htop lsof iftop tcpdump exim4
 apt-get -y install mdadm
 apt-get -y purge apparmor*
