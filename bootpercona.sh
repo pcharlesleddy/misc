@@ -21,20 +21,16 @@ EOF
 export DEBIAN_FRONTEND='noninteractive'
 apt-get update
 apt-get -y install htop lsof iftop tcpdump exim4
-apt-get -y install mdadm
 apt-get -y purge apparmor*
 umount /mnt
-yes | mdadm --create /dev/md0 --level=0 --raid-devices=2 /dev/xvdb /dev/xvdc
-mdadm --detail --scan >> /etc/mdadm/mdadm.conf
-mdadm --detail /dev/md0
 apt-get -y install lvm2
-pvcreate /dev/md0
-vgcreate vg /dev/md0
-lvcreate -L200G -n mysqldata vg
-lvcreate -L10G -n mysqllogs vg
-lvcreate -L50G -n mysqlbinlogs vg
-lvcreate -L50G -n mysqlrelaylogs vg
-lvcreate -L0.5T -n data vg
+pvcreate  /dev/xvdb /dev/xvdc
+vgcreate vg  /dev/xvdb /dev/xvdc
+lvcreate -i2 -L200G -n mysqldata vg
+lvcreate -i2 -L10G -n mysqllogs vg
+lvcreate -i2 -L50G -n mysqlbinlogs vg
+lvcreate -i2 -L50G -n mysqlrelaylogs vg
+lvcreate -i2 -L0.5T -n data vg
 mkfs -t ext4 /dev/vg/mysqldata
 mkfs -t ext4 /dev/vg/mysqllogs
 mkfs -t ext4 /dev/vg/mysqlbinlogs
